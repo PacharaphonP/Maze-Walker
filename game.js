@@ -172,6 +172,8 @@ function restart(){
     player.radius = 12;
     canvas.width = 320;
     canvas.height = 320;
+    $(".start-button").show();
+    clearInterval(interval);
     generateLevel();
 }
 
@@ -367,4 +369,3 @@ $("body").on("keyup",function(e) {
     if(e.keyCode==68) d_pressed=false;
 });
 
-restart();
