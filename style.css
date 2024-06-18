@@ -1,18 +1,49 @@
-
+*{
+    margin: 0;
+    color: white;
+}
 
 body{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
+    background: linear-gradient(black,black);
+}
+
+h1{
+    margin: 10px;
+}
+
+h2{
+    margin-bottom: 10px;
 }
 
 #canvas{
-    border: 1px solid black;
+    border: 3px solid rgb(255, 255, 255);
     background: black;
 }
 
 .start-button{
     margin-top: 20px;
+    color: black;
+    background-color: rgb(255, 255, 255);
+    width: 60px;
+    height: 40px;
+    border-radius: 10%;
+}
+
+.movement{
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.move{
+    border-radius: 10%;
+    background-color: rgba(255, 255, 255, 0.905);
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: black;
 }
