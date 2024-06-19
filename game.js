@@ -160,8 +160,8 @@ function nextLevel(){
         canvas.width = canvas.width+maze_width;
         canvas.height = canvas.height+maze_width;
     } else if(level<=10){
-        maze_width-=10;
-        player.radius-=3;
+        maze_width/=2;
+        player.radius/=2;
     } 
     generateLevel();
 }
@@ -173,8 +173,9 @@ function restart(){
     canvas.width = 320;
     canvas.height = 320;
     $(".start-button").show();
+    $(".level").text("");
     clearInterval(interval);
-    generateLevel();
+    //generateLevel();
 }
 
 function chosenCell(i,j,direction){
@@ -239,62 +240,70 @@ function playerUpdate(){
         } 
     }
 
-    if(player.x>goal.x && player.y>goal.y) nextLevel();
+    if(player.x-player.radius>goal.x && player.y-player.radius >goal.y) nextLevel();
 }
 
-function collisionDetection(e,speed,direction){
+function collisionDetection(player,speed,direction){
     if(speed==0) return true;
-    let left_e = e.x-e.radius;
-    let right_e = e.x+e.radius;
-    let top_e = e.y-e.radius;
-    let bot_e = e.y+e.radius;
-    for(let k=0;k<maze.maze_row;k++){
-        for(let l=0;l<maze_column;l++){
-            let i = maze[k][l].i;
-            let j = maze[k][l].j;
-            let left_m =(j)*maze_width;
-            let right_m = (j+1)*maze_width;
-            let top_m = i*maze_width;
-            let bot_m = (i+1)*maze_width;
+    let j = Math.floor(player.x/maze_width);
+    let i = Math.floor(player.y/maze_width);
 
-            // if(direction=="y"){
-            //     if(checkCollide1(left_m,right_m,left_e,right_e,e.x)){
-            //         if(speed>0){
-            //             if(bot_e<=top_m && bot_e+dy>=top_m){
-
-            //                 e.y = top_m-e.radius;
-            //                 return true;
-            //             }
-            //         } else {
-            //             if(top_e>=bot_m && top_e+dy<=bot_m){
-            //                 e.y = bot_m+e.radius;
-            //                 return true;
-            //             }
-            //         }
-            //     }
-            // } else if(direction=="x"){
-            //     if(checkCollide1(top_m,bot_m,top_e,bot_e,e.y)){
-            //         if(speed>0){
-            //             if(right_e<=left_m && right_e+dx>=left_m){
-            //                 e.x = left_m-e.radius;
-            //                 return true;
-            //             }
-            //         } else {
-            //             if(left_e>=right_m && left_e+dx<=right_m){
-            //                 e.x = right_m+e.radius;
-            //                 return true;
-            //             }
-            //         }
-            //     }
-            // }
+    let current_cell = maze[i][j];
+    console.log(current_cell);
+    if(direction==="x") {
+        if(speed > 0) {
+            if(current_cell.walls[1] === true) {
+                
+                let right_wall = j*maze_width + maze_width;
+                console.log(player.x+speed+" "+right_wall);
+                if(player.x+player.radius + speed > right_wall) {
+                    console.log("right wall");
+                    player.x = right_wall-player.radius;
+                    return true;
+                }
+            } 
+        } else {
+            if(current_cell.walls[3] === true) {
+                let left_wall = j*maze_width;
+                if(player.x - player.radius + speed < left_wall) {
+                    player.x = left_wall+player.radius;
+                    return true;
+                }
+            } 
         }
-        
+    } else if(direction === "y") {
+        if(speed > 0) {
+            if(current_cell.walls[2] === true) {
+               let bottom_wall = i*maze_width + maze_width;
+               if( player.y + player.radius + speed > bottom_wall) {
+                player.y = bottom_wall - player.radius;
+                return true;
+               }
+            }
+        } else {
+            if(current_cell.walls[0] === true) {
+                let top_wall = i*maze_width;
+                if(player.y - player.radius + speed < top_wall) {
+                    player.y = top_wall + player.radius;
+                    return true;
+                }
+            } 
+        }
     }
     return false;
 }
 
-function checkCollide1(m1,m2,e1,e2,x){
-    return (m1>e1 && m1<e2) || (m2>e1 && m2<e2) || (m1<x && m2>x);
+function move(e,dx,dy) {
+    if(e.x-e.radius+dx<0 || e.x+e.radius+dx>canvas.width) {
+        if(dx<0) e.x=e.radius;
+        else e.x = canvas.width-e.radius;
+        console.log("hit wall");
+    } else if(collisionDetection(e,dx,"x") === false) e.x+=dx;
+    if(e.y-e.radius+dy<0 || e.y+e.radius+dy>canvas.height) {
+        if(dy<0) e.y=e.radius;
+        else e.y = canvas.height-e.radius;
+        console.log("hit wall");
+    } else if(!collisionDetection(e,dy,"y")) e.y+=dy;
 }
 
 function draw(){
@@ -326,19 +335,6 @@ function drawMaze(){
     }
 }
 
-function move(e,dx,dy) {
-    if(e.x-e.radius+dx<0 || e.x+e.radius+dx>canvas.width) {
-        if(dx<0) e.x=e.radius;
-        else e.x = canvas.width-e.radius;
-        console.log("hit wall");
-    } else if(!collisionDetection(e,dx,"x")) e.x+=dx;
-    if(e.y-e.radius+dy<0 || e.y+e.radius+dy>canvas.height) {
-        if(dy<0) e.y=e.radius;
-        else e.y = canvas.height-e.radius;
-        console.log("hit wall");
-    } else if(!collisionDetection(e,dy,"y")) e.y+=dy;
-}
-
 function drawLine(x,y,x2,y2){
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -351,6 +347,7 @@ function drawLine(x,y,x2,y2){
 $(".start-button").on("click", function() {
     restart();
     $(this).hide();
+    generateLevel();
     interval = setInterval(update,1000/fps);
     
 });
