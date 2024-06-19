@@ -9,6 +9,7 @@ class Cell{
         this.i=i;
         this.j=j;
         this.walls = [true,true,true,true];
+        this.prev = -1;
     }
 
     draw(){
@@ -70,11 +71,12 @@ class Stack {
 let maze = [];
 let unvisited = [];
 let level = 0;
+let sol = [];
 
 let maze_column;
 let maze_row;
-let maze_width = 40;
-let r = 10;
+let maze_width = 20;
+let r = 5;
 let mazeBuilt;
 
 let w_pressed = false;
@@ -123,6 +125,7 @@ function generateLevel(){
         unvisited.push(unvisited_i);
     }
     dps();
+    $(".hint").show();
 }
 
 function dps(){
@@ -141,11 +144,21 @@ function dps(){
             let random_idx = Math.floor(Math.random()*unvisited_cellmate.length);
             //console.log(unvisited_cellmate[random_idx]);
             let random_cell = chosenCell(i,j,unvisited_cellmate[random_idx])
+            random_cell.prev = current_cell;
             s.push(random_cell);
             removeWalls(current_cell,random_cell);        
         } else s.pop();
     }
 
+}
+
+function solveMaze(){
+    sol = [];
+    let path = maze[maze_row-1][maze_column-1];
+    while(path.prev !== -1) {
+        path = path.prev;
+        sol.push(path);
+    }
 }
 
 function nextLevel(){
@@ -154,7 +167,8 @@ function nextLevel(){
         restart();
         return;
     }
-
+    
+    sol = [];
     level++;
     if(level<9) {
         canvas.width = canvas.width+maze_width;
@@ -167,12 +181,14 @@ function nextLevel(){
 }
 
 function restart(){
+    sol = [];
     level = 1;
-    maze_width= 40;
-    player.radius = 12;
+    maze_width= 20;
+    player.radius = 5;
     canvas.width = 320;
     canvas.height = 320;
-    $(".start-button").show();
+    $(".hint").hide();
+    $(".start").show();
     $(".level").text("");
     clearInterval(interval);
     //generateLevel();
@@ -323,7 +339,8 @@ function move(e,dx,dy) {
 
 function draw(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGoal();
+    drawSol();
+    drawRect(goal.x,goal.y,maze_width,"red");
     drawMaze();
     drawEntity(player,"yellow");
 }
@@ -336,12 +353,19 @@ function drawEntity(e,color){
     ctx.closePath();
 }
 
-function drawGoal(){
+function drawRect(x,y,w,color){
     ctx.beginPath()
-    ctx.rect(goal.x,goal.y,maze_width,maze_width);
-    ctx.fillStyle="red";
+    ctx.rect(x,y,w,w);
+    ctx.fillStyle= color;
     ctx.fill();
     ctx.closePath();
+}
+
+function drawSol() {
+    for(let i=0; i<sol.length; i++) {
+        let cell = sol[i];
+        drawRect(cell.j*maze_width, cell.i*maze_width,maze_width,"green");
+    }
 }
 
 function drawMaze(){
@@ -359,12 +383,17 @@ function drawLine(x,y,x2,y2){
     ctx.closePath();
 }
 
-$(".start-button").on("click", function() {
+$(".start").on("click", function() {
     restart();
     $(this).hide();
     generateLevel();
     interval = setInterval(update,1000/fps);
     
+});
+
+$(".hint").on("click", function() {
+    solveMaze();
+    $(this).hide();
 });
 
 $("body").on("keydown",function(e) {
@@ -381,3 +410,4 @@ $("body").on("keyup",function(e) {
     if(e.keyCode==68) d_pressed=false;
 });
 
+$(".hint").hide();
