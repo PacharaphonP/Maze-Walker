@@ -341,7 +341,7 @@ function move(e,dx,dy) {
 function draw(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawSol();
-    drawRect(goal.x,goal.y,maze_width,"red");
+    drawRect(goal.x+maze_width/3, goal.y + maze_width/3, maze_width*2/3, "red");
     drawMaze();
     drawEntity(player,"yellow");
 }
@@ -366,7 +366,7 @@ function drawSol() {
     let w = maze_width/3;
     for(let i=0; i<sol.length; i++) {
         let cell = sol[i];
-        drawRect(cell.j*maze_width+w, cell.i*maze_width+w ,w,"rgba(255, 255, 255 , 0.3 )");
+        drawRect(cell.j*maze_width+w, cell.i*maze_width+w ,w,"rgba(255, 255, 255 , "+(0.6-i/sol.length/3).toString()+")");
     }
 }
 
