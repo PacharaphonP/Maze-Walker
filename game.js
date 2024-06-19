@@ -253,21 +253,31 @@ function collisionDetection(player,speed,direction){
     let left_wall = j*maze_width;
     let bottom_wall = (i+1) *maze_width;
     let top_wall = i*maze_width;
-    console.log(current_cell);
+
+    let top_collide = player.y-player.radius < top_wall;
+    let bottom_collide =player.y+player.radius > bottom_wall;
+    let left_collide = player.x - player.radius < left_wall;
+    let right_collide = player.x + player.radius >right_wall;
+
+    let have_right = (j+1< maze_column);
+    let have_left = (j>0);
+    let have_bottom = i+1 <maze_row;
+    let have_top = i>0;
+
     if(direction==="x") {
-        let top_collide = player.y-player.radius < top_wall;
-        let bottom_collide =player.y+player.radius > bottom_wall;
         if(speed > 0) {
-            let out_of_idx = (j+1< maze_column);
-            if(current_cell.walls[1] === true || (out_of_idx && (top_collide && maze[i][j+1].walls[0]) || (bottom_collide && maze[i][j+1].walls[2]))) {
+            if(current_cell.walls[1] || (have_right && ((top_collide && maze[i][j+1].walls[0])
+                || (bottom_collide && (maze[i][j+1].walls[2])))) ||
+                ((bottom_collide && maze[i+1][j].walls[1]) || (top_collide && maze[i-1][j].walls[1]))) {
                 if(player.x+player.radius + speed > right_wall) {
                     player.x = right_wall-player.radius;
                     return true;
                 }
             } 
         } else {
-            let out_of_idx = (j>0);
-            if(current_cell.walls[3] === true || (out_of_idx && ((top_collide && maze[i][j-1].walls[0]) || (bottom_collide && maze[i][j-1].walls[2])))) {
+            if(current_cell.walls[3] || (have_left && ((top_collide && maze[i][j-1].walls[0]) 
+                || (bottom_collide && maze[i][j-1].walls[2]))) ||
+                ((bottom_collide && maze[i+1][j].walls[3]) || (top_collide && maze[i-1][j].walls[3]))) {
                 if(player.x - player.radius + speed < left_wall) {
                     player.x = left_wall+player.radius;
                     return true;
@@ -275,19 +285,19 @@ function collisionDetection(player,speed,direction){
             } 
         }
     } else if(direction === "y") {
-        let left_collide = player.x - player.radius < left_wall;
-        let right_collide = player.x + player.radius >right_wall;
         if(speed > 0) {
-            let out_of_idx = i+1 <maze_row;
-            if(current_cell.walls[2] === true || (out_of_idx && (right_collide && maze[i+1][j].walls[1]) || (left_collide && maze[i+1][j].walls[3]))) {
+            if(current_cell.walls[2] || (have_bottom && (right_collide && maze[i+1][j].walls[1]) 
+                || (left_collide && maze[i+1][j].walls[3])) ||
+                ((right_collide && maze[i][j+1].walls[2]) || (left_collide && maze[i][j-1].walls[2]))) {
                if( player.y + player.radius + speed > bottom_wall) {
                 player.y = bottom_wall - player.radius;
                 return true;
                }
             }
         } else {
-            let out_of_idx = i>0;
-            if(current_cell.walls[0] === true || (out_of_idx && (right_collide && maze[i-1][j].walls[1]) || (left_collide && maze[i-1][j].walls[3]))) {
+            if(current_cell.walls[0] || (have_top && (right_collide && maze[i-1][j].walls[1]) 
+                || (left_collide && maze[i-1][j].walls[3])) ||
+            ((right_collide && maze[i][j+1].walls[0]) || (left_collide && maze[i][j-1].walls[0]))) {
                 if(player.y - player.radius + speed < top_wall) {
                     player.y = top_wall + player.radius;
                     return true;
@@ -299,15 +309,15 @@ function collisionDetection(player,speed,direction){
 }
 
 function move(e,dx,dy) {
+
     if(e.x-e.radius+dx<0 || e.x+e.radius+dx>canvas.width) {
         if(dx<0) e.x=e.radius;
         else e.x = canvas.width-e.radius;
-        console.log("hit wall");
     } else if(collisionDetection(e,dx,"x") === false) e.x+=dx;
+
     if(e.y-e.radius+dy<0 || e.y+e.radius+dy>canvas.height) {
         if(dy<0) e.y=e.radius;
         else e.y = canvas.height-e.radius;
-        console.log("hit wall");
     } else if(!collisionDetection(e,dy,"y")) e.y+=dy;
 }
 
