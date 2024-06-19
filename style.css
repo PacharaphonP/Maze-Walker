@@ -1,6 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Nova+Mono&display=swap');
+
 *{
     margin: 0;
     color: white;
+    font-family: "Nova Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
 }
 
 body{
@@ -17,6 +22,7 @@ h1{
 
 h2{
     margin-bottom: 10px;
+    font-weight: 400;
 }
 
 #canvas{
@@ -36,6 +42,7 @@ h2{
     width: 60px;
     height: 40px;
     border-radius: 10%;
+    font-weight: 700;
 }
 
 .speed .btn{
@@ -50,7 +57,7 @@ h2{
 
 .move{
     border-radius: 10%;
-    background-color: rgba(255, 255, 255, 0.905);
+    background-color: rgba(255, 255, 255, 0.536);
     width: 20px;
     height: 20px;
     text-align: center;

@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 const fps=60;
 const root2 = Math.pow(2,0.5);
+let frame = fps;
 
 class Cell{
     constructor(i,j){
@@ -12,14 +13,14 @@ class Cell{
         this.prev = -1;
     }
 
-    draw(){
+    draw(color){
         let x = this.j*maze_width;
         let y = this.i*maze_width;
         let w = maze_width;
-        if(this.walls[0]) drawLine( x, y, x + w, y);//top
-        if(this.walls[1]) drawLine( x + w, y, x + w, y + w);//right
-        if(this.walls[2]) drawLine( x, y + w, x + w, y + w);//bottom
-        if(this.walls[3]) drawLine( x, y, x, y + w);//left
+        if(this.walls[0]) drawLine( x, y, x + w, y, color);//top
+        if(this.walls[1]) drawLine( x + w, y, x + w, y + w, color);//right
+        if(this.walls[2]) drawLine( x, y + w, x + w, y + w, color);//bottom
+        if(this.walls[3]) drawLine( x, y, x, y + w, color);//left
     }
 
     checkCellMate(){
@@ -362,23 +363,30 @@ function drawRect(x,y,w,color){
 }
 
 function drawSol() {
+    let w = maze_width/3;
     for(let i=0; i<sol.length; i++) {
         let cell = sol[i];
-        drawRect(cell.j*maze_width, cell.i*maze_width,maze_width,"green");
+        drawRect(cell.j*maze_width+w, cell.i*maze_width+w ,w,"rgba(255, 255, 255 , 0.3 )");
     }
 }
 
 function drawMaze(){
+    if(frame === 0) frame =fps;
+    let color = "blue";
+    if(frame > 40) color = "red";
+    else if(frame > 20) color = "green";
+
     for(let i=0;i<maze_row;i++){
-        for(let j=0;j<maze_column;j++) maze[i][j].draw();
+        for(let j=0;j<maze_column;j++) maze[i][j].draw(color);
     }
+    frame--;
 }
 
-function drawLine(x,y,x2,y2){
+function drawLine(x,y,x2,y2,color){
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x2, y2);
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();
 }
