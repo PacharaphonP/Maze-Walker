@@ -24,6 +24,11 @@ h2{
     background: black;
 }
 
+.speed{
+    display: inline-flex;
+    gap: 10px;
+}
+
 .btn{
     margin-top: 20px;
     color: black;
@@ -32,6 +37,10 @@ h2{
     height: 40px;
     border-radius: 10%;
 }
+
+.speed .btn{
+    width: 100px;
+}   
 
 .movement{
     margin-top: 20px;

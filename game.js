@@ -88,8 +88,7 @@ let player = {
     x: 20,
     y: 20,
     radius:r,
-    speedX:5,
-    speedY:5,
+    speed:5,
 }
 
 let goal = {
@@ -170,9 +169,9 @@ function nextLevel(){
     
     sol = [];
     level++;
-    if(level<9) {
-        canvas.width = canvas.width+maze_width;
-        canvas.height = canvas.height+maze_width;
+    if(level<10) {
+        canvas.width = canvas.width+2*maze_width;
+        canvas.height = canvas.height+2*maze_width;
     } else if(level<=10){
         maze_width/=2;
         player.radius/=2;
@@ -188,6 +187,7 @@ function restart(){
     canvas.width = 320;
     canvas.height = 320;
     $(".hint").hide();
+    $(".speed .btn").hide();
     $(".start").show();
     $(".level").text("");
     clearInterval(interval);
@@ -238,21 +238,21 @@ function update() {
 function playerUpdate(){
     if(w_pressed && !s_pressed){
         if(a_pressed && !d_pressed){
-            move(player,-player.speedX/root2,-player.speedY/root2);
+            move(player,-player.speed/root2,-player.speed/root2);
         } else if(!a_pressed && d_pressed){
-            move(player,player.speedX/root2,-player.speedY/root2);
-        } else move(player,0,-player.speedY);
+            move(player,player.speed/root2,-player.speed/root2);
+        } else move(player,0,-player.speed);
     } else if(!w_pressed && s_pressed){
         if(a_pressed && !d_pressed){
-            move(player,-player.speedX/root2,player.speedY/root2);
+            move(player,-player.speed/root2,player.speed/root2);
         } else if(!a_pressed && d_pressed){
-            move(player,player.speedX/root2,player.speedY/root2);
-        } else move(player,0,player.speedY);
+            move(player,player.speed/root2,player.speed/root2);
+        } else move(player,0,player.speed);
     } else{
         if(a_pressed && !d_pressed){
-            move(player,-player.speedX/root2,0);
+            move(player,-player.speed/root2,0);
         } else if(!a_pressed && d_pressed){
-            move(player,player.speedX/root2,0);
+            move(player,player.speed/root2,0);
         } 
     }
 
@@ -386,6 +386,7 @@ function drawLine(x,y,x2,y2){
 $(".start").on("click", function() {
     restart();
     $(this).hide();
+    $(".speed .btn").show();
     generateLevel();
     interval = setInterval(update,1000/fps);
     
@@ -394,6 +395,14 @@ $(".start").on("click", function() {
 $(".hint").on("click", function() {
     solveMaze();
     $(this).hide();
+});
+
+$(".up").on("click", function() {
+    if(player.speed<20) player.speed *=2;
+});
+
+$(".down").on("click", function() {
+    if(player.speed>1) player.speed/=2;
 });
 
 $("body").on("keydown",function(e) {
@@ -410,4 +419,4 @@ $("body").on("keyup",function(e) {
     if(e.keyCode==68) d_pressed=false;
 });
 
-$(".hint").hide();
+restart();
